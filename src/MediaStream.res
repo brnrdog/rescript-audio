@@ -16,5 +16,8 @@ type streamResult = Ok(stream) | Error(exn)
 
 let getStream = () => {
   open Promise
-  nav.mediaDevices->getUserMedia({video: false, audio: true})->then(stream => Ok(stream)->resolve)
+  nav.mediaDevices
+  ->getUserMedia({video: false, audio: true})
+  ->then(stream => Ok(stream)->resolve)
+  ->catch(err => resolve(Error(err)))
 }

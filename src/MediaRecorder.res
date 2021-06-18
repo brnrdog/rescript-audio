@@ -8,29 +8,31 @@ type property = {
 }
 @new external create: MediaStream.stream => mediaRecorder = "MediaRecorder"
 
-@send
-external _requestData: (mediaRecorder, unit) => AudioBlob.t = "requestData"
+@send external _requestData: (mediaRecorder, unit) => AudioBlob.t = "requestData"
 
-@send
-external _start: mediaRecorder => unit = "start"
-let start = mediaRecorder => {
-  Js.log(">> Starting...")
+@send external _start: mediaRecorder => unit = "start"
+let start = (mediaRecorder, ~onDataAvailable) => {
+  mediaRecorder["ondataavailable"] = onDataAvailable
   mediaRecorder->_start
   mediaRecorder
 }
 
-@send
-external _stop: mediaRecorder => unit = "stop"
+@send external _stop: mediaRecorder => unit = "stop"
 let stop = mediaRecorder => {
   mediaRecorder->_stop
   mediaRecorder
 }
 
-let onDataAvailable = (mediaRecorder, fn) => {
-  mediaRecorder["ondataavailable"] = fn
+@send external _pause: mediaRecorder => unit = "pause"
+let pause = mediaRecorder => {
+  mediaRecorder->_pause
   mediaRecorder
 }
 
-let requestData = mediaRecorder => {
-  mediaRecorder->_requestData
+@send external _resume: mediaRecorder => unit = "resume"
+let resume = mediaRecorder => {
+  mediaRecorder->_resume
+  mediaRecorder
 }
+
+let requestData = mediaRecorder => mediaRecorder->_requestData
