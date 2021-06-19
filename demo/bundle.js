@@ -162,10 +162,12 @@
     if (v.TAG === 0) {
       var recorder = new MediaRecorder(v._0);
       var onStart = function(param) {
-        return start(recorder, onDataAvailable);
+        start(recorder, onDataAvailable);
+        console.log(recorder.state);
       };
       var onStop = function(param) {
         recorder.stop();
+        console.log(recorder.state);
       };
       var onResume = function(param) {
         recorder.resume();

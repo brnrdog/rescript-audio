@@ -55,8 +55,14 @@ let main = MediaStream.getStream()->thenResolve(v => {
   | MediaStream.Error(e) => Js.log(e)
   | MediaStream.Ok(stream) =>
     let recorder = stream->MediaRecorder.create
-    let onStart = _ => recorder->MediaRecorder.start(~onDataAvailable)
-    let onStop = _ => recorder->MediaRecorder.stop
+    let onStart = _ => {
+      recorder->MediaRecorder.start(~onDataAvailable)
+      recorder->MediaRecorder.getState->Js.log
+    }
+    let onStop = _ => {
+      recorder->MediaRecorder.stop
+      recorder->MediaRecorder.getState->Js.log
+    }
     let onResume = _ => recorder->MediaRecorder.resume
     let onPause = _ => recorder->MediaRecorder.pause
     Document.setupEventListeners(~onStart, ~onPause, ~onResume, ~onStop)
