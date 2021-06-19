@@ -6,7 +6,7 @@ type property = {
   value: blobEvent => unit,
   writable: bool,
 }
-@new external create: MediaStream.stream => mediaRecorder = "MediaRecorder"
+@new external create: MediaStream.t => mediaRecorder = "MediaRecorder"
 
 @send external _requestData: (mediaRecorder, unit) => AudioBlob.t = "requestData"
 
@@ -14,25 +14,14 @@ type property = {
 let start = (mediaRecorder, ~onDataAvailable) => {
   mediaRecorder["ondataavailable"] = onDataAvailable
   mediaRecorder->_start
-  mediaRecorder
 }
 
-@send external _stop: mediaRecorder => unit = "stop"
-let stop = mediaRecorder => {
-  mediaRecorder->_stop
-  mediaRecorder
-}
+@send external stop: mediaRecorder => unit = "stop"
 
-@send external _pause: mediaRecorder => unit = "pause"
-let pause = mediaRecorder => {
-  mediaRecorder->_pause
-  mediaRecorder
-}
+@send external pause: mediaRecorder => unit = "pause"
 
-@send external _resume: mediaRecorder => unit = "resume"
-let resume = mediaRecorder => {
-  mediaRecorder->_resume
-  mediaRecorder
-}
+@send external resume: mediaRecorder => unit = "resume"
 
 let requestData = mediaRecorder => mediaRecorder->_requestData
+
+let stopFromStream = stream => stream->create->stop

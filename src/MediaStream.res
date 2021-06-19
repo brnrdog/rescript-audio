@@ -1,6 +1,6 @@
 type mediaDevices
 type navigator = {mediaDevices: mediaDevices}
-type stream
+type t
 
 type mediaDevicesConstraints = {
   video: bool,
@@ -8,11 +8,10 @@ type mediaDevicesConstraints = {
 }
 
 @send
-external getUserMedia: (mediaDevices, mediaDevicesConstraints) => Js.Promise.t<stream> =
-  "getUserMedia"
+external getUserMedia: (mediaDevices, mediaDevicesConstraints) => Js.Promise.t<t> = "getUserMedia"
 @val external nav: navigator = "navigator"
 
-type streamResult = Ok(stream) | Error(exn)
+type streamResult = Ok(t) | Error(exn)
 
 let getStream = () => {
   open Promise

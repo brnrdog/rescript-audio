@@ -6,14 +6,36 @@ type audioSelector = {src: string}
 
 module Document = {
   @val external document: Dom.document = "document"
+
   @send
   external querySelector: (Dom.document, string) => option<Dom.element> = "querySelector"
+
   @send
   external setElementAttribute: (
     Dom.element,
     ~attributeName: string,
     ~attributeValue: 'any,
   ) => unit = "setAttribute"
+
+  @send
+  external addEventListener: (
+    Dom.element,
+    ~eventType: string,
+    ~eventListener: Dom.event => unit,
+  ) => unit = "addEventListener"
+
+  let setupEventListeners = (~onPause, ~onStart, ~onResume, ~onStop) => {
+    let addClickEvent = (selector, listener) =>
+      document
+      ->querySelector(selector)
+      ->Belt.Option.getUnsafe
+      ->addEventListener(~eventType="click", ~eventListener=listener)
+
+    addClickEvent("#start", onStart)
+    addClickEvent("#pause", onPause)
+    addClickEvent("#resume", onResume)
+    addClickEvent("#stop", onStop)
+  }
 
   let updateAudioElementSrc = src =>
     document
@@ -25,25 +47,18 @@ module Document = {
 let chunks: array<AudioBlob.t> = []
 
 let onDataAvailable = (event: MediaRecorder.blobEvent) => {
-  event.data->AudioBlob.createFromBlob->AudioBlob.createUrl->Document.updateAudioElementSrc
+  event.data->AudioBlob.createUrlFromBlob->Document.updateAudioElementSrc
 }
 
 let main = MediaStream.getStream()->thenResolve(v => {
   switch v {
   | MediaStream.Error(e) => Js.log(e)
   | MediaStream.Ok(stream) =>
-    let recorder = stream->MediaRecorder.create->MediaRecorder.start(~onDataAvailable)
-
-    let _ = setTimeout(() => {
-      let _ = MediaRecorder.pause(recorder)
-    }, 3000)
-
-    let _ = setTimeout(() => {
-      let _ = MediaRecorder.resume(recorder)
-    }, 9000)
-
-    let _ = setTimeout(() => {
-      let _ = MediaRecorder.stop(recorder)
-    }, 15000)
+    let recorder = stream->MediaRecorder.create
+    let onStart = _ => recorder->MediaRecorder.start(~onDataAvailable)
+    let onStop = _ => recorder->MediaRecorder.stop
+    let onResume = _ => recorder->MediaRecorder.resume
+    let onPause = _ => recorder->MediaRecorder.pause
+    Document.setupEventListeners(~onStart, ~onPause, ~onResume, ~onStop)
   }
 })
