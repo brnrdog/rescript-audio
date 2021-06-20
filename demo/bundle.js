@@ -9,6 +9,27 @@
     return URL.createObjectURL(createFromBlob(blob));
   }
 
+  // node_modules/rescript/lib/es6/caml_exceptions.js
+  var id = {
+    contents: 0
+  };
+  function create(str) {
+    id.contents = id.contents + 1 | 0;
+    return str + ("/" + id.contents);
+  }
+  function caml_is_extension(e) {
+    if (e == null) {
+      return false;
+    } else {
+      return typeof e.RE_EXN_ID === "string";
+    }
+  }
+
+  // node_modules/rescript/lib/es6/js_exn.js
+  function raiseError(str) {
+    throw new Error(str);
+  }
+
   // node_modules/rescript/lib/es6/caml_array.js
   function sub(x, offset, len) {
     var result = new Array(len);
@@ -86,22 +107,6 @@
     }
   }
 
-  // node_modules/rescript/lib/es6/caml_exceptions.js
-  var id = {
-    contents: 0
-  };
-  function create(str) {
-    id.contents = id.contents + 1 | 0;
-    return str + ("/" + id.contents);
-  }
-  function caml_is_extension(e) {
-    if (e == null) {
-      return false;
-    } else {
-      return typeof e.RE_EXN_ID === "string";
-    }
-  }
-
   // node_modules/@ryyppy/rescript-promise/lib/es6/src/Promise.bs.js
   var JsError = /* @__PURE__ */ create("Promise.JsError");
   function $$catch(promise, callback) {
@@ -115,20 +120,28 @@
 
   // lib/es6/src/MediaStream.bs.js
   function getStream(param) {
-    return $$catch(navigator.mediaDevices.getUserMedia({
-      video: false,
-      audio: true
-    }).then(function(stream) {
-      return Promise.resolve({
-        TAG: 0,
-        _0: stream
+    var mediaDevices = navigator.mediaDevices;
+    if (mediaDevices !== void 0) {
+      return $$catch(mediaDevices.getUserMedia({
+        video: false,
+        audio: true
+      }).then(function(stream) {
+        return Promise.resolve({
+          TAG: 0,
+          _0: stream
+        });
+      }), function(err) {
+        return Promise.resolve({
+          TAG: 1,
+          _0: err
+        });
       });
-    }), function(err) {
+    } else {
       return Promise.resolve({
         TAG: 1,
-        _0: err
+        _0: raiseError("The method getUserMedia not supported in this environment")
       });
-    });
+    }
   }
 
   // lib/es6/src/MediaRecorder.bs.js

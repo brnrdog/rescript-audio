@@ -1,5 +1,5 @@
 type mediaDevices
-type navigator = {mediaDevices: mediaDevices}
+type navigator = {mediaDevices: Js.undefined<mediaDevices>}
 type t
 
 type mediaDevicesConstraints = {
@@ -15,8 +15,14 @@ type streamResult = Ok(t) | Error(exn)
 
 let getStream = () => {
   open Promise
-  nav.mediaDevices
-  ->getUserMedia({video: false, audio: true})
-  ->then(stream => Ok(stream)->resolve)
-  ->catch(err => resolve(Error(err)))
+
+  switch Js.Undefined.toOption(nav.mediaDevices) {
+  | Some(mediaDevices) =>
+    mediaDevices
+    ->getUserMedia({video: false, audio: true})
+    ->then(stream => stream->Ok->resolve)
+    ->catch(err => err->Error->resolve)
+  | None =>
+    "The method getUserMedia not supported in this environment"->Js.Exn.raiseError->Error->resolve
+  }
 }
