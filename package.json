@@ -1,5 +1,6 @@
 {
   "name": "rescript-audio",
+  "description": "ReScript bindings for working with the Web Audio API.",
   "version": "1.0.0",
   "main": "index.js",
   "author": "Bernardo Gurgel <brnrdog@hey.com>",
