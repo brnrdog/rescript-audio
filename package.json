@@ -8,7 +8,7 @@
   "scripts": {
     "start": "rescript build -w",
     "demo": "http-server",
-    "build": "esbuild lib/es6/src/Audio.bs.js --bundle --outfile=./demo/bundle.js"
+    "build": "esbuild lib/es6/src/Demo.bs.js --bundle --outfile=./demo/bundle.js"
   },
   "devDependencies": {
     "esbuild": "^0.12.8",
