@@ -120,9 +120,9 @@
 
   // lib/es6/src/MediaStream.bs.js
   function getStream(param) {
-    var mediaDevices = navigator.mediaDevices;
-    if (mediaDevices !== void 0) {
-      return $$catch(mediaDevices.getUserMedia({
+    var maybeMediaDevices = navigator.mediaDevices;
+    if (maybeMediaDevices !== void 0) {
+      return $$catch(maybeMediaDevices.getUserMedia({
         video: false,
         audio: true
       }).then(function(stream) {
@@ -139,7 +139,7 @@
     } else {
       return Promise.resolve({
         TAG: 1,
-        _0: raiseError("The method getUserMedia not supported in this environment")
+        _0: raiseError("The method getUserMedia is not supported in this environment")
       });
     }
   }
@@ -152,8 +152,14 @@
 
   // lib/es6/src/Audio.bs.js
   function setupEventListeners(onPause, onStart, onResume, onStop) {
-    var addClickEvent = function(selector, listener) {
-      document.querySelector(selector).addEventListener("click", listener);
+    var selector = document.querySelector("audio");
+    var audioContext = new AudioContext();
+    var track = audioContext.createMediaElementSource(selector);
+    var gain = audioContext.createGain();
+    console.log(audioContext);
+    console.log(track.connect(gain).connect(audioContext.destination));
+    var addClickEvent = function(selector2, listener) {
+      document.querySelector(selector2).addEventListener("click", listener);
     };
     addClickEvent("#start", onStart);
     addClickEvent("#pause", onPause);

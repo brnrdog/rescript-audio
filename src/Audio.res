@@ -25,6 +25,18 @@ module Document = {
   ) => unit = "addEventListener"
 
   let setupEventListeners = (~onPause, ~onStart, ~onResume, ~onStop) => {
+    let selector = document->querySelector("audio")->Belt.Option.getUnsafe
+    let audioContext = AudioContext.create()
+    let track = audioContext->AudioContext.createMediaElementSource(selector)
+    let gain = audioContext->AudioContext.createGain
+
+    Js.log(audioContext)
+
+    track
+    ->AudioContext.connect(gain)
+    ->AudioContext.connect(AudioContext.getDestination(audioContext))
+    ->Js.log
+
     let addClickEvent = (selector, listener) =>
       document
       ->querySelector(selector)
