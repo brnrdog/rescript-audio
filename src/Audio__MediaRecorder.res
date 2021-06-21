@@ -1,10 +1,10 @@
 type event
-type blobEvent = {data: AudioBlob.t}
+type blobEvent = {data: Audio__AudioBlob.t}
 type t = {@set "ondataavailable": blobEvent => unit}
 
-@new external create: MediaStream.t => t = "MediaRecorder"
+@new external create: Audio__MediaStream.t => t = "MediaRecorder"
 @get external getState: t => string = "state"
-@send external requestData: (t, unit) => AudioBlob.t = "requestData"
+@send external requestData: (t, unit) => Audio__AudioBlob.t = "requestData"
 @send external _start: t => unit = "start"
 let start = (mediaRecorder, ~onDataAvailable) => {
   mediaRecorder["ondataavailable"] = onDataAvailable
