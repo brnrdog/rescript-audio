@@ -28,10 +28,20 @@ module Document = {
   let setupEventListeners = (~onPause, ~onStart, ~onResume, ~onStop) => {
     let selector = document->querySelector("audio")->Belt.Option.getUnsafe
     let audioContext = AudioContext.create()
-    let track = audioContext->AudioContext.createMediaElementSource(selector)
+    let sourceNode = audioContext->AudioContext.createMediaElementSource(selector)
     let gain = audioContext->AudioContext.createGain
+    // let oscillator = audioContext->AudioContext.createOscillator
 
-    track
+    let mute = _e =>
+      gain->AudioNode.setGainValue(~value=0.0, ~startTime=audioContext->AudioContext.getCurrentTime)
+
+    let boost = _ =>
+      gain->Audio.AudioNode.setGainValue(
+        ~value=2.0,
+        ~startTime=audioContext->AudioContext.getCurrentTime,
+      )
+
+    sourceNode
     ->AudioNode.connect(gain)
     ->AudioNode.connect(AudioContext.getDestination(audioContext))
     ->Js.log
@@ -46,13 +56,16 @@ module Document = {
     addClickEvent("#pause", onPause)
     addClickEvent("#resume", onResume)
     addClickEvent("#stop", onStop)
+    addClickEvent("#mute", mute)
+    addClickEvent("#boost", boost)
   }
 
-  let updateAudioElementSrc = src =>
+  let updateAudioElementSrc = src => {
     document
-    ->querySelector("audio")
+    ->querySelector("source")
     ->Belt.Option.getUnsafe
     ->setElementAttribute(~attributeName="src", ~attributeValue=src)
+  }
 }
 
 let chunks: array<AudioBlob.t> = []

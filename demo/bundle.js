@@ -1,5 +1,5 @@
 (() => {
-  // lib/es6/src/AudioBlob.bs.js
+  // lib/es6/src/Audio__AudioBlob.bs.js
   function createFromBlob(blob) {
     return new Blob([blob], {
       type: "audio/ogg; codecs=opus"
@@ -7,6 +7,11 @@
   }
   function createUrlFromBlob(blob) {
     return URL.createObjectURL(createFromBlob(blob));
+  }
+
+  // lib/es6/src/Audio__AudioNode.bs.js
+  function setGainValue(gainNode, value, startTime) {
+    gainNode.gain.setValueAtTime(value, startTime);
   }
 
   // node_modules/rescript/lib/es6/caml_exceptions.js
@@ -118,7 +123,7 @@
     });
   }
 
-  // lib/es6/src/MediaStream.bs.js
+  // lib/es6/src/Audio__MediaStream.bs.js
   function getStream(param) {
     var maybeMediaDevices = navigator.mediaDevices;
     if (maybeMediaDevices !== void 0) {
@@ -144,30 +149,37 @@
     }
   }
 
-  // lib/es6/src/MediaRecorder.bs.js
+  // lib/es6/src/Audio__MediaRecorder.bs.js
   function start(mediaRecorder, onDataAvailable2) {
     mediaRecorder.ondataavailable = onDataAvailable2;
     mediaRecorder.start();
   }
 
-  // lib/es6/src/Audio.bs.js
+  // lib/es6/src/Demo.bs.js
   function setupEventListeners(onPause, onStart, onResume, onStop) {
     var selector = document.querySelector("audio");
     var audioContext = new AudioContext();
-    var track = audioContext.createMediaElementSource(selector);
+    var sourceNode = audioContext.createMediaElementSource(selector);
     var gain = audioContext.createGain();
-    console.log(audioContext);
-    console.log(track.connect(gain).connect(audioContext.destination));
+    var mute = function(_e) {
+      return setGainValue(gain, 0, audioContext.currentTime);
+    };
+    var boost = function(param) {
+      return setGainValue(gain, 2, audioContext.currentTime);
+    };
+    console.log(sourceNode.connect(gain).connect(audioContext.destination));
     var addClickEvent = function(selector2, listener) {
       document.querySelector(selector2).addEventListener("click", listener);
     };
     addClickEvent("#start", onStart);
     addClickEvent("#pause", onPause);
     addClickEvent("#resume", onResume);
-    return addClickEvent("#stop", onStop);
+    addClickEvent("#stop", onStop);
+    addClickEvent("#mute", mute);
+    return addClickEvent("#boost", boost);
   }
   function updateAudioElementSrc(src) {
-    document.querySelector("audio").setAttribute("src", src);
+    document.querySelector("source").setAttribute("src", src);
   }
   var $$Document = {
     setupEventListeners,
