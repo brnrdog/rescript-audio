@@ -1,5 +1,9 @@
 # rescript-audio
 
+[![npm version](https://img.shields.io/npm/v/rescript-audio.svg)](https://www.npmjs.com/package/rescript-audio)
+[![CI](https://github.com/brnrdog/rescript-audio/actions/workflows/ci.yml/badge.svg)](https://github.com/brnrdog/rescript-audio/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ReScript bindings for the Web Audio API.
 
 ## Installation
@@ -180,47 +184,7 @@ npm run watch  # Development mode
 
 ## Contributing
 
-This project uses [Conventional Commits](https://www.conventionalcommits.org/) for automatic versioning and changelog generation.
-
-### Commit Message Format
-
-```
-<type>(<scope>): <description>
-
-[optional body]
-
-[optional footer(s)]
-```
-
-### Types
-
-| Type | Description | Version Bump |
-|------|-------------|--------------|
-| `feat` | New feature | Minor |
-| `fix` | Bug fix | Patch |
-| `perf` | Performance improvement | Patch |
-| `refactor` | Code refactoring | Patch |
-| `docs` | Documentation changes | Patch (README only) |
-| `chore` | Maintenance tasks | No release |
-| `test` | Test changes | No release |
-
-### Breaking Changes
-
-Add `BREAKING CHANGE:` in the commit footer or `!` after the type for major version bumps:
-
-```
-feat!: remove deprecated API
-
-BREAKING CHANGE: The old API has been removed.
-```
-
-### Examples
-
-```bash
-git commit -m "feat(oscillator): add custom waveform support"
-git commit -m "fix(gain): correct parameter range validation"
-git commit -m "docs(README): add filter examples"
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
