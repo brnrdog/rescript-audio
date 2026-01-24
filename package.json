@@ -1,0 +1,28 @@
+{
+  "name": "rescript-audio",
+  "version": "0.1.0",
+  "description": "ReScript bindings for the Web Audio API",
+  "main": "./src/Audio.js",
+  "module": "./src/Audio.js",
+  "scripts": {
+    "build": "rescript",
+    "clean": "rescript clean",
+    "watch": "rescript -w",
+    "test": "rescript && node tests/AudioTests.js"
+  },
+  "keywords": [
+    "rescript",
+    "web-audio",
+    "audio",
+    "bindings"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@rescript/core": "^1.6.1",
+    "rescript": "^12.1.0"
+  },
+  "devDependencies": {
+    "zekr": "^1.2.0"
+  }
+}
