@@ -4,6 +4,20 @@
   "description": "ReScript bindings for the Web Audio API",
   "main": "./src/Audio.js",
   "module": "./src/Audio.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brnrdog/rescript-audio.git"
+  },
+  "homepage": "https://github.com/brnrdog/rescript-audio#readme",
+  "bugs": {
+    "url": "https://github.com/brnrdog/rescript-audio/issues"
+  },
+  "files": [
+    "src/Audio.res",
+    "src/Audio.js",
+    "rescript.json",
+    "README.md"
+  ],
   "scripts": {
     "build": "rescript",
     "clean": "rescript clean",
@@ -16,7 +30,7 @@
     "audio",
     "bindings"
   ],
-  "author": "",
+  "author": "Bernardo Gurgel <brnrdog@hey.com>",
   "license": "MIT",
   "dependencies": {
     "@rescript/core": "^1.6.1",
