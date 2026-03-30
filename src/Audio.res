@@ -62,8 +62,12 @@ module Param = {
     "setTargetAtTime"
 
   @send
-  external setValueCurveAtTime: (t, ~values: array<float>, ~startTime: float, ~duration: float) => t =
-    "setValueCurveAtTime"
+  external setValueCurveAtTime: (
+    t,
+    ~values: array<float>,
+    ~startTime: float,
+    ~duration: float,
+  ) => t = "setValueCurveAtTime"
 
   @send external cancelScheduledValues: (t, ~cancelTime: float) => t = "cancelScheduledValues"
 
@@ -274,8 +278,7 @@ module Delay = {
     let maxDelay = options->Option.flatMap(o => o.maxDelayTime)
     let delay = _make(ctx, ~maxDelayTime=?maxDelay)
     switch options {
-    | Some(opts) =>
-      opts.delayTime->Option.forEach(dt => Param.setValue(delayTimeParam(delay), dt))
+    | Some(opts) => opts.delayTime->Option.forEach(dt => Param.setValue(delayTimeParam(delay), dt))
     | None => ()
     }
     delay
@@ -384,9 +387,95 @@ module Analyser = {
   external asNode: t => Node.t = "%identity"
 }
 
-// Context extensions for getting destination and creating nodes
+module Buffer = {
+  type t
+
+  @get external duration: t => float = "duration"
+  @get external length: t => int = "length"
+  @get external sampleRate: t => float = "sampleRate"
+  @get external numberOfChannels: t => int = "numberOfChannels"
+
+  @send external getChannelData: (t, int) => Float32Array.t = "getChannelData"
+}
+
+module BufferSource = {
+  type t
+
+  @send external _make: Context.t => t = "createBufferSource"
+
+  @set external setBuffer: (t, Buffer.t) => unit = "buffer"
+  @get external buffer: t => Nullable.t<Buffer.t> = "buffer"
+
+  @send external start: t => unit = "start"
+  @send external startAt: (t, float) => unit = "start"
+  @send external startAtWithOffset: (t, float, float) => unit = "start"
+  @send external startAtWithOffsetAndDuration: (t, float, float, float) => unit = "start"
+  @send external stop: t => unit = "stop"
+  @send external stopAt: (t, float) => unit = "stop"
+
+  @set external setOnEnded: (t, unit => unit) => unit = "onended"
+  @get external playbackRate: t => Param.t = "playbackRate"
+  @set external setLoop: (t, bool) => unit = "loop"
+  @get external loop: t => bool = "loop"
+
+  let make = (ctx: Context.t): t => _make(ctx)
+
+  external asNode: t => Node.t = "%identity"
+}
+
+module MediaStreamTrack = {
+  type t
+
+  @send external stop: t => unit = "stop"
+  @get external kind: t => string = "kind"
+  @get external label: t => string = "label"
+  @get external enabled: t => bool = "enabled"
+  @set external setEnabled: (t, bool) => unit = "enabled"
+}
+
+module MediaStream = {
+  type t
+
+  @send external getTracks: t => array<MediaStreamTrack.t> = "getTracks"
+  @send external getAudioTracks: t => array<MediaStreamTrack.t> = "getAudioTracks"
+}
+
+module MediaStreamSource = {
+  type t
+
+  @send external _make: (Context.t, MediaStream.t) => t = "createMediaStreamSource"
+
+  let make = (ctx: Context.t, stream: MediaStream.t): t => _make(ctx, stream)
+
+  external asNode: t => Node.t = "%identity"
+}
+
+module OfflineContext = {
+  type t
+
+  @new
+  external make: (~numberOfChannels: int, ~length: int, ~sampleRate: float) => t =
+    "OfflineAudioContext"
+
+  @get external sampleRate: t => float = "sampleRate"
+  @get external length: t => int = "length"
+
+  @send external _createGain: t => Gain.t = "createGain"
+  @send external _createBufferSource: t => BufferSource.t = "createBufferSource"
+  @get external destination: t => Destination.t = "destination"
+
+  let createGain = (ctx: t): Gain.t => _createGain(ctx)
+  let createBufferSource = (ctx: t): BufferSource.t => _createBufferSource(ctx)
+
+  @send external startRendering: t => promise<Buffer.t> = "startRendering"
+}
+
+// Context extensions for creating nodes and decoding audio
 module ContextExt = {
   @get external destination: Context.t => Destination.t = "destination"
+
+  @send
+  external decodeAudioData: (Context.t, ArrayBuffer.t) => promise<Buffer.t> = "decodeAudioData"
 }
 
 // Utility functions for common patterns
